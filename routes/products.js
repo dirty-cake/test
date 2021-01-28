@@ -1,13 +1,22 @@
 const Router = require('koa-router')
+const { getProducts, createProduct, updateProduct, deleteProduct } = require('../handlers/products')
 
 const router = new Router({prefix: '/products'})
 
-router.get('/', ctx => {})
+router.get('/', async ctx => {
+    ctx.response.body = await getProducts()
+})
 
-router.post('/', ctx => {})
+router.post('/', async ctx => {
+    ctx.response.body = await createProduct(ctx.request.body.product)
+})
 
-router.patch('/:productId', ctx => {})
+router.patch('/:productId', async ctx => {
+    ctx.response.body = await updateProduct(ctx.request.params.productId, ctx.request.body.product)
+})
 
-router.delete('/:productId', ctx => {})
+router.delete('/:productId', async ctx => {
+    ctx.response.body = await deleteProduct(ctx.request.params.productId)
+})
 
 module.exports = router
