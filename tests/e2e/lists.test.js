@@ -1,6 +1,7 @@
 const assert = require('assert')
 const supertest = require('supertest')
 const jwt = require('jsonwebtoken')
+const { clear } = require('../utils/db')
 const db = require('../../db')
 const app = require('../../index')
 
@@ -11,26 +12,33 @@ describe('lists', () => {
     await db.User.query().insertGraph({
       username: 'user',
       password: '123',
+      products: [
+        {'#id': 'car', name: 'car'},
+        {'#id': 'toy', name: 'toy'}
+      ],
       lists: [{
-        name: 'shopping', products: [{name: 'car'}, {name: 'toy'}]
-      }]
-    })
-  })
-  
-  after(async () => {
-    await db.knex.destroy()
+        name: 'shopping', products: [{'#ref': 'car'}, {'#ref': 'toy'}]
+      }],
+
+    }, {allowRefs: true})
   })
 
-  it.only('should return lists', async () => {
+  after(async () => {
+    await clear()
+  })
+
+  it('should return lists', async () => {
     await supertest(app.callback())
       .get('/lists')
-      .expect(200, [
-        { id: 1, name: 'shopping', userId: 1 },
-        { id: 2, name: 'purchasing', userId: 1 },
-      ])
+      .expect(200, [{
+        id: 1,
+        name: 'shopping',
+        userId: 1,
+        products: [{id: 1, name: 'car', userId: 1}, {id: 2, name: 'toy', userId: 1}]
+      }])
   })
 
-  it('should save new list', async () => {
+  it.skip('should save new list', async () => {
     const expected = { id: 3, name: 'cars', userId: 1 }
 
     await supertest(app.callback())
@@ -43,7 +51,7 @@ describe('lists', () => {
     assert.deepStrictEqual(addedProduct.toJSON(), expected)
   })
 
-  it('should not save new list for nonauthorized user', async () => {
+  it.skip('should not save new list for nonauthorized user', async () => {
 
     await supertest(app.callback())
       .post('/lists')
@@ -51,7 +59,7 @@ describe('lists', () => {
       .expect(401)
   })
 
-  it('should update existed list', async () => {
+  it.skip('should update existed list', async () => {
     const expected = { id: 2, name: 'cars', userId: 1 }
 
     await supertest(app.callback())
@@ -64,7 +72,7 @@ describe('lists', () => {
     assert.deepStrictEqual(updatedProduct.toJSON(), expected)
   })
 
-  it('should not update existed list for nonauthorized user', async () => {
+  it.skip('should not update existed list for nonauthorized user', async () => {
 
     await supertest(app.callback())
       .patch('/lists/ 1')
@@ -72,7 +80,7 @@ describe('lists', () => {
       .expect(401)
   })
 
-  it('should delete existed list', async () => {
+  it.skip('should delete existed list', async () => {
     const expected = {id: 1}
     await supertest(app.callback())
       .delete(`/lists/${expected.id}`)
@@ -83,7 +91,7 @@ describe('lists', () => {
     assert.strictEqual(deletedProduct, undefined)
   })
 
-  it('should not delete existed list for nonauthorized user', async () => {
+  it.skip('should not delete existed list for nonauthorized user', async () => {
 
     await supertest(app.callback())
       .delete('/list/1')

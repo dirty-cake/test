@@ -4,30 +4,31 @@ const configs = require('../../knexfile')
 async function create() {
   const config = configs[process.env.NODE_ENV || 'test']
 
-  const database = config.connection.database
-  config.connection.database = null
-
-
-  let knex = Knex(config)
-  await knex.raw(`DROP DATABASE IF EXISTS ${database}`)
-  await knex.raw(`CREATE DATABASE ${database}`)
+  let knex = Knex({...config, connection: {...config.connection, database: null}})
+  await knex.raw(`DROP DATABASE IF EXISTS ${config.connection.database}`)
+  await knex.raw(`CREATE DATABASE ${config.connection.database}`)
   await knex.destroy()
 
-  knex = Knex({...config, connection: {...config.connection, database}})
+  knex = Knex(config)
   await knex.migrate.latest()
-
-  return {
-    async drop() {
-      await knex.destroy()
-      knex = Knex(config)
-      await knex.raw(`DROP DATABASE IF EXISTS ${database}`)
-      await knex.destroy()
-    },
-    async clear() {
-      await knex.migrate.rollback()
-      await knex.migrate.latest()
-    }
-  }
+  await knex.destroy()
 }
 
-module.exports = {create}
+async function drop() {
+  const config = configs[process.env.NODE_ENV || 'test']
+
+  const knex = Knex({...config, connection: {...config.connection, database: null}})
+  await knex.raw(`DROP DATABASE IF EXISTS ${config.connection.database}`)
+  await knex.destroy()
+}
+
+async function clear() {
+  const config = configs[process.env.NODE_ENV || 'test']
+
+  const knex = Knex(config)
+  await knex.migrate.rollback()
+  await knex.migrate.latest()
+  await knex.destroy()
+}
+
+module.exports = {create, drop, clear}

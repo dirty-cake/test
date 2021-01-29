@@ -16,8 +16,8 @@ class Product extends Model {
         join: {
           from: 'products.id',
           through: {
-            from: 'lists_to_products.product_id',
-            to: 'lists_to_products.list_id'
+            from: 'lists_to_products.userId',
+            to: 'lists_to_products.listId'
           },
           to: 'lists.id'
         }
@@ -26,7 +26,7 @@ class Product extends Model {
         relation: Model.BelongsToOneRelation,
         modelClass: User,
         join: {
-          from: 'products.user_id',
+          from: 'products.userId',
           to: 'users.id'
         }
       }

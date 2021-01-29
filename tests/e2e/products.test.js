@@ -1,6 +1,7 @@
 const assert = require('assert')
 const supertest = require('supertest')
 const jwt = require('jsonwebtoken')
+const { clear } = require('../utils/db')
 const db = require('../../db')
 const app = require('../../index')
 
@@ -16,7 +17,7 @@ describe('products', () => {
   })
 
   after(async () => {
-    await db.knex.destroy()
+    await clear()
   })
 
   it('should return products', async () => {

@@ -1,12 +1,11 @@
-const db = require('./utils/db')
-
-let commands
+const {create, drop} = require('./utils/db')
 
 exports.mochaHooks = {
   async beforeAll() {
-    commands = await db.create()
+    await create()
   },
   async afterAll() {
-    await commands.drop()
+    await require('../db').knex.destroy()
+    await drop()
   }
 };

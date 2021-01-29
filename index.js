@@ -12,7 +12,6 @@ app.use(async (ctx, next) => {
 	try {
 		await next()
 	} catch (err) {
-		console.log(err)
 		if (err.isJoi) {
 			ctx.status = 400
 			ctx.body = err.details

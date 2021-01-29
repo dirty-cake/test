@@ -16,7 +16,7 @@ class User extends Model {
         modelClass: List,
         join: {
           from: 'users.id',
-          to: 'lists.user_id'
+          to: 'lists.userId'
         }
       },
       products: {
@@ -24,7 +24,7 @@ class User extends Model {
         modelClass: Product,
         join: {
           from: 'users.id',
-          to: 'products.user_id'
+          to: 'products.userId'
         }
       }
     }
