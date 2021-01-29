@@ -41,8 +41,17 @@ describe('products', () => {
     assert.deepStrictEqual(addedProduct.toJSON(), expected)
   })
 
+  it('should not save new product for nonauthorized user', async () => {
+
+    await supertest(app.callback())
+      .post('/products')
+      .send({ name: 'train' })
+      .expect(401)
+  })
+
   it('should update existed product', async () => {
     const expected = { id: 2, name: 'tea', userId: 1 }
+
     await supertest(app.callback())
       .patch(`/products/${expected.id}`)
       .send({ name: expected.name })
@@ -51,6 +60,14 @@ describe('products', () => {
 
     const updatedProduct = await db.Product.query().findById(expected.id)
     assert.deepStrictEqual(updatedProduct.toJSON(), expected)
+  })
+
+  it('should not update existed product for nonauthorized user', async () => {
+
+    await supertest(app.callback())
+      .patch('/products/ 1')
+      .send({ name: 'tea' })
+      .expect(401)
   })
 
   it('should delete existed product', async () => {
@@ -62,6 +79,13 @@ describe('products', () => {
 
     const deletedProduct = await db.Product.query().findById(expected.id)
     assert.strictEqual(deletedProduct, undefined)
+  })
+
+  it('should not delete existed product for nonauthorized user', async () => {
+
+    await supertest(app.callback())
+      .delete('/products/1')
+      .expect(401)
   })
 })
 

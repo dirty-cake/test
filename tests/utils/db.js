@@ -20,7 +20,7 @@ async function create() {
     async drop() {
       await knex.destroy()
       knex = Knex(config)
-      await knex.raw(`DROP DATABASE IF EXISTS ${database} WITH (FORCE)`)
+      await knex.raw(`DROP DATABASE IF EXISTS ${database}`)
       await knex.destroy()
     },
     async clear() {
