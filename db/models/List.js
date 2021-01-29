@@ -19,7 +19,7 @@ class List extends Model {
         }
       },
       products: {
-        relation: Model.HasManyRelation,
+        relation: Model.ManyToManyRelation,
         modelClass: Product,
         join: {
           from: 'lists.id',

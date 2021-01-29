@@ -1,6 +1,6 @@
 const Router = require('koa-router')
 const db = require('../db')
-const { getUsers, createUser} = require('../handlers/users')
+const { getUsers, createUser, signIn } = require('../handlers/users')
 
 const router = new Router({prefix: '/users'})
 
@@ -13,6 +13,10 @@ router.post('/', async ctx => {
     username: 'Sam',
     password: '123123'
   })
+})
+
+router.post('/signin', async ctx => {
+  ctx.response.body = await signIn(ctx.request.body)
 })
 
 module.exports = router

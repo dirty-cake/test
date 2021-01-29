@@ -29,9 +29,20 @@ class User extends Model {
       }
     }
   }
+
+  verifyPassword(password) {
+    return bcrypt.compareSync(password, this.password)
+  }
+
   $formatDatabaseJson(json) {
     json = super.$formatDatabaseJson(json)
     json.password = bcrypt.hashSync(json.password, 10)
+    return json
+  }
+
+  $formatJson(json) {
+    json = super.$formatJson(json)
+    delete json.password
     return json
   }
 }

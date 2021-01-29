@@ -7,29 +7,27 @@ async function getProducts() {
     .select('*')
 }
 
-async function createProduct(product) {
-  const newProduct = await schemas.schema.validateAsync(product)
-  return await db.Product
-    .query()
-    .insert(newProduct)
-    .returning('*')
+async function createProduct({ auth, data }) {
+  if (!auth) throw new Error('The operation is not allowed')
+  const product = await schemas.schema.validateAsync(data)
+  product.userId = auth.userId
+  return await db.Product.query().insert(product).returning('*')
 }
 
-async function updateProduct(productId, product) {
-  const id = await schemas.id.validateAsync(productId)
-  const newProduct = await schemas.schema.validateAsync(product)
-  return await db.Product
-    .query()
-    .update(newProduct)
-    .where('id' === id)
+async function updateProduct({ auth, id, data }) {
+  if (!auth) throw new Error('The operation is not allowed')
+  const productId = await schemas.id.validateAsync(id)
+  const product = await schemas.schema.validateAsync(data)
+  const [updated] = await db.Product.query().patch(product).where('id', productId).where('userId', auth.userId).returning('*')
+  if (!updated) throw new Error('Product does not exist')
+  return updated
 }
 
-async function deleteProduct(productId) {
-  const id = await schemas.id.validateAsync(productId)
-  return await db.Product
-    .query()
-    .del()
-    .where('id' === id)
+async function deleteProduct({ auth, id }) {
+  if (!auth) throw new Error('The operation is not allowed')
+  const productId = await schemas.id.validateAsync(id)
+  const deleted = await db.Product.query().del().where('id', productId).where('userId', auth.userId)
+  if (!deleted) throw new Error('Product does not exist')
 }
 
 module.exports = {

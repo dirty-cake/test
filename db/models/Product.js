@@ -11,7 +11,7 @@ class Product extends Model {
 
     return {
       lists: {
-        relation: Model.HasManyRelation,
+        relation: Model.ManyToManyRelation,
         modelClass: List,
         join: {
           from: 'products.id',

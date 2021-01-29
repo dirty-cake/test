@@ -12,6 +12,7 @@ app.use(async (ctx, next) => {
 	try {
 		await next()
 	} catch (err) {
+		console.log(err)
 		if (err.isJoi) {
 			ctx.status = 400
 			ctx.body = err.details
@@ -26,4 +27,6 @@ app.use(lists.routes())
 app.use(products.routes())
 app.use(users.routes())
 
-app.listen(3000)
+if (require.main === module) app.listen(3000)
+
+module.exports = app
