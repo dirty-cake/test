@@ -1,3 +1,4 @@
+require('dotenv/config')
 const Koa = require('koa')
 const body = require('koa-body')
 const lists = require('./routes/lists')

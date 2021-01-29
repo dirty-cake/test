@@ -5,7 +5,7 @@ const { clear } = require('../utils/db')
 const db = require('../../db')
 const app = require('../../index')
 
-const ACCESS_TOKEN = jwt.sign({ userId: 1 }, 'secret')
+const ACCESS_TOKEN = jwt.sign({ userId: 1 }, process.env.JWT_CONFIG)
 
 describe('lists', () => {
   before(async () => {
@@ -38,20 +38,20 @@ describe('lists', () => {
       }])
   })
 
-  it.skip('should save new list', async () => {
-    const expected = { id: 3, name: 'cars', userId: 1 }
+  it('should save new list', async () => {
+    const expected = { id: 2, name: 'cars', userId: 1, products: [] }
 
     await supertest(app.callback())
       .post('/lists')
-      .send({ name: expected.name })
+      .send({ name: expected.name, products: expected.products })
       .set('Authorization', ACCESS_TOKEN)
       .expect(200, expected)
 
-    const addedProduct = await db.Product.query().findById(expected.id).withGraphJoined('products')
+    const addedProduct = await db.List.query().findById(expected.id).withGraphJoined('products')
     assert.deepStrictEqual(addedProduct.toJSON(), expected)
   })
 
-  it.skip('should not save new list for nonauthorized user', async () => {
+  it('should not save new list for nonauthorized user', async () => {
 
     await supertest(app.callback())
       .post('/lists')
@@ -59,20 +59,20 @@ describe('lists', () => {
       .expect(401)
   })
 
-  it.skip('should update existed list', async () => {
-    const expected = { id: 2, name: 'cars', userId: 1 }
+  it('should update existed list', async () => {
+    const expected = { id: 2, name: 'cars', userId: 1, products: [] }
 
     await supertest(app.callback())
       .patch(`/lists/${expected.id}`)
-      .send({ name: expected.name })
+      .send({ name: expected.name, products: expected.products })
       .set('Authorization', ACCESS_TOKEN)
       .expect(200, expected)
 
-    const updatedProduct = await db.Product.query().findById(expected.id).withGraphJoined('products')
+    const updatedProduct = await db.List.query().findById(expected.id).withGraphJoined('products')
     assert.deepStrictEqual(updatedProduct.toJSON(), expected)
   })
 
-  it.skip('should not update existed list for nonauthorized user', async () => {
+  it('should not update existed list for nonauthorized user', async () => {
 
     await supertest(app.callback())
       .patch('/lists/ 1')
@@ -80,23 +80,22 @@ describe('lists', () => {
       .expect(401)
   })
 
-  it.skip('should delete existed list', async () => {
+  it('should delete existed list', async () => {
     const expected = {id: 1}
     await supertest(app.callback())
       .delete(`/lists/${expected.id}`)
       .set('Authorization', ACCESS_TOKEN)
       .expect(204)
 
-    const deletedProduct = await db.Product.query().findById(expected.id).withGraphJoined('products')
+    const deletedProduct = await db.List.query().findById(expected.id).withGraphJoined('products')
     assert.strictEqual(deletedProduct, undefined)
   })
 
-  it.skip('should not delete existed list for nonauthorized user', async () => {
+  it('should not delete existed list for nonauthorized user', async () => {
 
     await supertest(app.callback())
-      .delete('/list/1')
+      .delete('/lists/2')
       .expect(401)
-
   })
 })
 

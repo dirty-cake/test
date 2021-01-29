@@ -1,3 +1,4 @@
+require('dotenv/config')
 const {create, drop} = require('./utils/db')
 
 exports.mochaHooks = {
