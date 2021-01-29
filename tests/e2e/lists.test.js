@@ -5,7 +5,9 @@ const { clear } = require('../utils/db')
 const db = require('../../db')
 const app = require('../../index')
 
-const ACCESS_TOKEN = jwt.sign({ userId: 1 }, process.env.JWT_CONFIG)
+console.log(process.env.JWT_SECRET)
+
+const ACCESS_TOKEN = jwt.sign({ userId: 1 }, process.env.JWT_SECRET)
 
 describe('lists', () => {
   before(async () => {

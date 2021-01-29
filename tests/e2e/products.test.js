@@ -5,7 +5,7 @@ const { clear } = require('../utils/db')
 const db = require('../../db')
 const app = require('../../index')
 
-const ACCESS_TOKEN = jwt.sign({ userId: 1 }, process.env.JWT_CONFIG)
+const ACCESS_TOKEN = jwt.sign({ userId: 1 }, process.env.JWT_SECRET)
 
 describe('products', () => {
   before(async () => {

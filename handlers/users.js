@@ -17,7 +17,7 @@ async function signIn(credentials) {
 	const user = await db.User.query().where('username', credentials.username).first()
 	if (!user) throw new HttpError(404, 'No such user')
 	if (!user.verifyPassword(credentials.password)) throw new HttpError(401,'Invalid password')
-	const token = jwt.sign({userId: user.id}, process.env.JWT_CONFIG)
+	const token = jwt.sign({userId: user.id}, process.env.JWT_SECRET)
 	user.token = token
 	return user
 }
